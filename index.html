@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+      .red {
+        color: red
+      }
+
+      .green {
+        color: green
+      }
+    </style>
+  </head>
+  <body>
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+    <form id="mainForm">
+      Name: <input type="text" id="name" required> <span id = "nameSpan"></span> <br>
+      Email: <input type="email"  id="email" required> <span id = "emailSpan"></span> <br>
+      Phone: <input type="number"  id="phoneNumber" required> <span id = "phoneSpan"></span> <br>
+      <span id = "invalidSpan"></span>
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+
+      var $name = $('#name')
+      var $email = $('#email')
+      var $phoneNumber = $('#phoneNumber')
+
+      $('#mainForm').submit(function(e){
+        e.preventDefault()
+
+        var name = $name.val()
+        var email = $email.val()
+        var phoneNumber = $phoneNumber.val()
+        var form = {
+          name: name,
+          email: email,
+          phoneNumber: phoneNumber
+        }
+
+        isFormValid(form)
+
+      })
+
+      function isFormValid(form){
+        if (validateName(form.name) && validateEmail(form.email) && validatePhone(form.phoneNumber)) {
+          $('button').replaceWith('<p class="green">Success!</p>')
+          var jsonForm = JSON.stringify(form)
+          alert(jsonForm)
+          var url = 'localhost:3000'
+          $.post(url, jsonForm, function(data, status){
+              alert(status)
+          })
+        }
+      }
+
+      function validateName(name){
+        if((/^[a-zA-Z ]+$/).test(name) && name.split(' ').length > 1){
+          return true
+        } else {
+          alert('Please enter full name')
+          $('#nameSpan').html('*').addClass('red')
+          return false
+        }
+      }
+
+      function validateNameTest(){
+        // one word
+        console.log(validateName('Roberto') === false);
+        // two words
+        console.log(validateName('Roberto Torres') === true);
+        // empty string
+        console.log(validateName('') === false);
+        // undefined
+        console.log(validateName() === false);
+      }
+
+      function validateEmail(email){
+        if(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+          return true
+        } else {
+          alert('Invalid email')
+          $('#emailSpan').html('*').addClass('red')
+          return false
+        }
+      }
+
+      function validateEmailTest(){
+        // email without @ symbol
+        console.log(validateEmail('roberto1gmail.com') === false);
+        // without first part (personal-info) of email
+        console.log(validateEmail('@gmail.com') === false);
+        // without second part (domain-info)
+        console.log(validateEmail('roberto@') === false);
+        // empty string
+        console.log(validateEmail('') === false);
+        // undefined
+        console.log(validateEmail() === false);
+        // correct email
+        console.log(validateEmail('robertitopacheco@gmail.com') === true);
+
+      }
+
+      function validatePhone(phoneNumber){
+        if(/^\d{10}$/.test(phoneNumber)){
+          return true
+        } else {
+          alert('Invalid phone number')
+          $('#phoneSpan').html('*').addClass('red')
+          return false
+        }
+      }
+
+      function validatePhoneTest(){
+        //less than 10 digits
+        console.log(validatePhone('787') === false);
+        //more than 10 digits
+        console.log(validatePhone('12345678910') === false);
+        //has dots
+        console.log(validatePhone('787.382.6798') === false);
+        //has dash
+        console.log(validatePhone('787-382-6798') === false);
+        //has parenthesis
+        console.log(validatePhone('(787)382-6798') === false);
+        //correct way
+        console.log(validatePhone('7873826798') === true);
+      }
+
+
+    </script>
+
+  </body>
+</html>
